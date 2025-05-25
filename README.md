@@ -83,6 +83,40 @@ Of course that will hide access to the build in serial port.
 
 To use it in a DOSDriver go to `Sys:Devs/DOSDrivers`and duplicate the `SER` driver and rename it to `PL2303` or whatever you like. Open the file in a text editor and adopt the `Device` entry to have the value `pl2303.device`.  
 
+### QEMU
+
+If you are running AmigaOS 4 under QEMU you can add a PL2303 USB device like this during startup:
+
+```sh
+-device usb-host,vendorid=0x067b,productid=0x2303
+```
+
+If you don't want to have the USB device attached during startup of QEMU you can attach the device in the control monitor like this:
+
+```sh
+device_add usb-host,vendorid=0x067b,productid=0x2303,id=pl2303
+```
+
+and detached like this:
+
+```sh
+device_del pl2303
+```
+
+If you have the serial debug output of the kernel redirect to the calling qemu shell you can let qemu offer the monitor via a TCP/IP port like this as a startup parameter:
+
+```sh
+-monitor telnet::45454,server,nowait
+```
+
+Thus you can access the monitor with letent like this and than perform the commands for attaching/detaching like this:
+
+```sh
+% telnet 127.0.0.1 45454
+(qemu)device_add usb-host,vendorid=0x067b,productid=0x2303,id=pl2303
+(qemu) device_del pl2303
+```
+
 ## Contributing
 
 Pull requests are welcome! Please open issues for bugs or feature requests.
