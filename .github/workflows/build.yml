@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build with Docker
+        run: |
+          docker run -v ${{ github.workspace }}:/opt/code -w /opt/code walkero/amigagccondocker:os4-gcc11 /bin/bash -c "su amidev -c 'CROSS_COMPILE=ppc-amigaos- make'"
+
+      - name: Archive build output
+        run: |
+          tar czf pl2303_build.tar.gz pl2303.usbfd pl2303.fdclass || true
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: pl2303_build.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
