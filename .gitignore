@@ -1,0 +1,4 @@
+**/*.o
+*.usbfd
+.DS_Store
+.vscode/**
