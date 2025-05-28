@@ -29,7 +29,7 @@ BOOL pl2303_supports_hx_status( struct PL2303DeviceBase *devBase ) {
 		AVT_Type,			MEMF_SHARED,
 		TAG_END );
 
-	if( buffer != NULL ) {
+	if( buffer == NULL ) {
 		IExec->DebugPrintF( "[%s@%d] Out of memory, unable to allocate memory in desired amount\n",__func__,__LINE__ );	
 
 		return FALSE;
