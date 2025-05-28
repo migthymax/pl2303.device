@@ -21,10 +21,3 @@ jobs:
       - name: Archive build output
         run: |
           tar czf pl2303_build.tar.gz pl2303.usbfd pl2303.fdclass || true
-
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v2
-        with:
-          files: pl2303_build.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
