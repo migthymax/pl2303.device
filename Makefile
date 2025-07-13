@@ -1,3 +1,6 @@
+
+CROSS_COMPILE ?= ppc-amigaos-
+
 CC     = $(CROSS_COMPILE)gcc 
 CXX    = $(CROSS_COMPILE)c++ 
 AS     = $(CROSS_COMPILE)as 

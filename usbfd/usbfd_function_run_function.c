@@ -686,10 +686,10 @@ uint32 _usbfd_function_RunFunction( struct USBFDIFace *Self,struct USBFDStartupM
 exit_linecoding_failed:
 exit_initialze_chip_failed:
 	
-	// Clear it because we wait on that until the devic expunge has signal us that it has really expunged
+	// Clear it because we wait on that until the device expunge has signal us that it has really expunged
 	IExec->SetSignal( 0,SIGF_SINGLE );
 
-	// We onle Remove the device, that will trigger a call to expunge of the device
+	// We only remove the device, that will trigger a call to expunge of the device
 	// And the device Expunge method is responsible to call DeleteLibrary
 	IExec->RemDevice( (struct Device *)devBase );
 
