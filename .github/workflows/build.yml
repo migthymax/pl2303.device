@@ -4,26 +4,29 @@ on:
   push:
     branches: [ master ]
   workflow_dispatch:
+
+env:
+  archive_name: pl2303-$(date +%Y%m%d%H%M%S)
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
+    container:
+      image: walkero/amigagccondocker:os4-gcc11
+      volumes:
+        - '${{ github.workspace }}:/opt/code'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build with Docker
+      - name: Build
         run: |
-          docker run -v ${{ github.workspace }}:/opt/code -w /opt/code walkero/amigagccondocker:os4-gcc11 /bin/bash -c "su amidev -c 'CROSS_COMPILE=ppc-amigaos- make'"
-
-      - name: Install Lha
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lha
+          CROSS_COMPILE=ppc-amigaos- make
 
       - name: Compress binaries with Lha (timestamped)
         run: |
           TS=$(date +%Y%m%d%H%M%S)
-          ARCHIVE=pl2303_${TS}.lha
+          ARCHIVE="pl2303_${TS}.lha"
           lha a "$ARCHIVE" pl2303.usbfd pl2303.fdclass
           echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
 
