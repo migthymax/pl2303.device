@@ -1,14 +1,12 @@
 name: Build
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
 
+
+  push:
+    branches: [ master ]
+  workflow_dispatch:
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -18,6 +16,20 @@ jobs:
         run: |
           docker run -v ${{ github.workspace }}:/opt/code -w /opt/code walkero/amigagccondocker:os4-gcc11 /bin/bash -c "su amidev -c 'CROSS_COMPILE=ppc-amigaos- make'"
 
-      - name: Archive build output
+      - name: Install Lha
         run: |
-          tar czf pl2303_build.tar.gz pl2303.usbfd pl2303.fdclass || true
+          sudo apt-get update
+          sudo apt-get install -y lha
+
+      - name: Compress binaries with Lha (timestamped)
+        run: |
+          TS=$(date +%Y%m%d%H%M%S)
+          ARCHIVE=pl2303_${TS}.lha
+          lha a "$ARCHIVE" pl2303.usbfd pl2303.fdclass
+          echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
+
+      - name: Upload package to GitHub Packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: pl2303
+          path: ${{ env.ARCHIVE }}
