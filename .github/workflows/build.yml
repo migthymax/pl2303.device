@@ -3,6 +3,7 @@ name: Build
 on:
   push:
     branches: [ master ]
+    tags: [ 'v*.*.*' ]   # Add this line to trigger on version tags
   workflow_dispatch:
 
 env:
@@ -30,8 +31,12 @@ jobs:
           lha a "$ARCHIVE" pl2303.usbfd pl2303.fdclass
           echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
 
-      - name: Upload package to GitHub Packages
-        uses: actions/upload-artifact@v4
+      - name: Upload LHA release file in GitHub
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: pl2303
-          path: ${{ env.ARCHIVE }}
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: /opt/code/${{ env.ARCHIVE }}
+          asset_name: ${{ env.ARCHIVE }}
+          asset_content_type: application/x-lzh-compressed
